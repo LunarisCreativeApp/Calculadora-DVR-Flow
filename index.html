@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <title>Calculadora DVR Flow</title>
+
+</head>
+<body>
+    <div id="nav">
+        <img src="./logo-DVRFlow.png">
+        <a href="https://lunariscreativelab.com/"><img src="./logo-Lunaris.png"></a>
+    </div>
+
+    <section id="main-section">
+        <h1>Calculadora de custo DVR Flow</h1>
+        <p id="p-quantidade">Quantidade de dispositivos: <input id="quantidade" type="number" value="0"></p>
+        <button onclick="calcular()">CALCULAR</button>
+        <div id="resultados">
+            <ul>
+                <li>
+                    <h2>Custo de Implementação</h2>
+                    <p>R$ <span id="implementação">0</span></p>
+                </li>
+                <li>
+                    <h2>Custo Mensal</h2>
+                    <p>R$ <span id="custo-mensal">0</span></p>
+                </li>
+                <li>
+                    <h2>Custo Anual</h2>
+                    <p>R$ <span id="custo-anual">0</span></p>
+                </li>
+                <li>
+                    <h2>Custo Total (24 meses)</h2>
+                    <p>R$ <span id="custo-total">0</span></p>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <footer>
+        <h3>Powered by: <span>Lunaris Creative Lab</span></h3>
+    </footer>
+
+    <script src="./calculadora.js"></script>
+</body>
+</html>
