@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentynel - Calculadora Comercial</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <img src="/Sentynel-Logo.svg">
+            <h1 class="subtitle">Calculadora de orçamentos</h1>
+        </header>
+
+        <div class="main-content">
+            <!-- Formulário de Configuração -->
+            <section class="config-section card">
+                <h2>Configuração do Contrato</h2>
+                
+                <form id="contractForm">
+                    <div class="form-group">
+                        <label for="deviceCount">
+                            Quantidade de Dispositivos
+                            <span class="label-hint">Ex: 30, 80, 150</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            id="deviceCount" 
+                            min="1" 
+                            value="50" 
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="basePrice">
+                            Valor Mensal por Dispositivo (Faixa 1 - até 50)
+                            <span class="label-hint">Preço base por dispositivo</span>
+                        </label>
+                        <input
+                            type="number" 
+                            id="basePrice" 
+                            min="0" 
+                            step="0.01" 
+                            value="50.00" 
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tierDiscount">
+                            Desconto por Faixa (R$/dispositivo)
+                            <span class="label-hint">Desconto progressivo aplicado por faixa</span>
+                        </label>
+                        <select id="tierDiscount" required>
+                            <option value="2">R$ 2,00</option>
+                            <option value="3">R$ 3,00</option>
+                            <option value="4">R$ 4,00</option>
+                            <option value="5" selected>R$ 5,00</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="annualDiscount">
+                            Desconto Base por Ano de Contrato (%)
+                            <span class="label-hint">2 anos: base% no 2º ano | 3 anos: (base+2)% no 2º, (base+4)% no 3º</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            id="annualDiscount" 
+                            min="0" 
+                            max="100" 
+                            step="0.5" 
+                            value="5" 
+                            required
+                        >
+                    </div>
+
+                    <button type="button" id="calculateBtn" class="btn-primary">
+                        Calcular Orçamento
+                    </button>
+                </form>
+            </section>
+
+            <!-- Resumo Financeiro -->
+            <section class="summary-section" id="summarySection" style="display: none;">
+                <div class="card">
+                    <h2>Resumo Financeiro</h2>
+                    
+                    <!-- KPIs Principais -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card kpi-primary">
+                            <div class="kpi-label">Total do Contrato</div>
+                            <div class="kpi-value" id="kpiTotal">R$ 0,00</div>
+                            <div class="kpi-subtitle" id="kpiSubtitle">Plano de 3 anos</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Mensal Equivalente</div>
+                            <div class="kpi-value" id="kpiMonthly">R$ 0,00</div>
+                            <div class="kpi-subtitle">Valor médio por mês</div>
+                        </div>
+                        <div class="kpi-card kpi-success">
+                            <div class="kpi-label">Economia vs 1 Ano</div>
+                            <div class="kpi-value" id="kpiSavings">R$ 0,00</div>
+                            <div class="kpi-subtitle" id="kpiSavingsPercent">0%</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Total + Implementação</div>
+                            <div class="kpi-value" id="kpiWithImpl">R$ 0,00</div>
+                            <div class="kpi-subtitle" id="kpiImplValue">Implementação: R$ 0,00</div>
+                        </div>
+                    </div>
+
+                    <!-- Cards de Planos -->
+                    <div class="plans-section">
+                        <h3>Comparação de Planos</h3>
+                        <div class="plans-grid" id="plansGrid">
+                            <!-- Cards serão gerados dinamicamente -->
+                        </div>
+                    </div>
+
+                    <!-- Detalhamento por Faixas -->
+                    <div class="details-section">
+                        <h3>Detalhamento de Custos</h3>
+                        
+                        <div class="detail-card">
+                            <h4>Custo Mensal Base</h4>
+                            <div class="detail-value" id="baseMonthlyCost">R$ 0,00</div>
+                            <p class="detail-description">Custo mensal total com base nas faixas de preço</p>
+                        </div>
+
+                        <div class="annual-breakdown" id="annualBreakdown">
+                            <!-- Detalhamento anual será gerado dinamicamente -->
+                        </div>
+
+                        <div class="tiers-breakdown" id="tiersBreakdown">
+                            <!-- Breakdown de faixas será gerado dinamicamente -->
+                        </div>
+
+                        <div class="detail-card">
+                            <h4>Taxa de Implementação</h4>
+                            <div class="detail-value" id="implementationCost">R$ 0,00</div>
+                            <p class="detail-description" id="implementationFormula">0 dispositivos × R$ 10,00</p>
+                        </div>
+                    </div>
+
+                    <!-- Texto Copiável -->
+                    <div class="copy-section">
+                        <h3>Proposta para o Cliente</h3>
+                        <div class="copy-container">
+                            <textarea id="proposalText" readonly></textarea>
+                            <button type="button" id="copyBtn" class="btn-secondary">
+                                📋 Copiar Proposta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+</html>
