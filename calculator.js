@@ -232,68 +232,101 @@ function generateProposalText() {
     const r = calculationResults;
     const selectedPlan = r.plans[r.selectedPlan];
     const years = r.contractYears;
+    const year1Plan = r.plans.year1;
+
+    const fullPrice = year1Plan.total * years;
+    const savings = fullPrice - selectedPlan.total;
+    const savingsPercent = fullPrice > 0 ? (savings / fullPrice) * 100 : 0;
+
+    const totalWithImpl = selectedPlan.total + r.implementationCost;
+
+    const fmtDevices = (n) => new Intl.NumberFormat('pt-BR').format(n);
+
+    const tiersLines = [
+        r.tiers.tier1.devices > 0
+            ? `• Faixa 1 (1–50): ${fmtDevices(r.tiers.tier1.devices)} × ${formatCurrency(r.tiers.tier1.price)} = ${formatCurrency(r.tiers.tier1.cost)}/mês`
+            : null,
+        r.tiers.tier2.devices > 0
+            ? `• Faixa 2 (51–100): ${fmtDevices(r.tiers.tier2.devices)} × ${formatCurrency(r.tiers.tier2.price)} = ${formatCurrency(r.tiers.tier2.cost)}/mês`
+            : null,
+        r.tiers.tier3.devices > 0
+            ? `• Faixa 3 (>100): ${fmtDevices(r.tiers.tier3.devices)} × ${formatCurrency(r.tiers.tier3.price)} = ${formatCurrency(r.tiers.tier3.cost)}/mês`
+            : null
+    ].filter(Boolean);
+
+    const plansLines = [
+        `• 1 ano: ${formatCurrency(r.plans.year1.total)} (≈ ${formatCurrency(r.plans.year1.monthly)}/mês)`,
+        `• 2 anos: ${formatCurrency(r.plans.year2.total)} (≈ ${formatCurrency(r.plans.year2.monthly)}/mês)`,
+        `• 3 anos: ${formatCurrency(r.plans.year3.total)} (≈ ${formatCurrency(r.plans.year3.monthly)}/mês)`
+    ];
     
-    const text = `
-═══════════════════════════════════════════════════
-              PROPOSTA COMERCIAL - DVR FLOW
-═══════════════════════════════════════════════════
+    // Importante: NÃO usar `.filter(Boolean)` aqui, porque ele remove strings vazias
+    // que são justamente as linhas em branco.
+    const lines = [
+        `PROPOSTA COMERCIAL — DVR FLOW`,
+        `Data: ${new Intl.DateTimeFormat('pt-BR').format(new Date())}`,
+        '',
+        `Olá! Segue a simulação para ${fmtDevices(r.deviceCount)} dispositivo(s).`,
+        '',
+        `✅ PLANO SELECIONADO: ${years} ${years === 1 ? 'ano' : 'anos'}`,
+        `• Mensal equivalente: ${formatCurrency(selectedPlan.monthly)}`,
+        `• Total do contrato: ${formatCurrency(selectedPlan.total)}`,
+        `• Implementação (taxa única): ${formatCurrency(r.implementationCost)}`,
+        `• Total geral (contrato + implementação): ${formatCurrency(totalWithImpl)}`,
+        years > 1 ? `• Economia vs ${years} contrato(s) de 1 ano: ${formatCurrency(savings)} (${savingsPercent.toFixed(1)}%)` : '',
+        '',
+        `Custo mensal base (somatório das faixas): ${formatCurrency(r.baseMonthlyCost)}`,
+        '',
+        `Detalhamento por faixas (mensal):`,
+        ...tiersLines,
+        '',
+        `Comparação de planos (total e mensal equivalente):`,
+        ...plansLines,
+        '',
+        `Condições usadas na simulação:`,
+        `• Preço base (Faixa 1): ${formatCurrency(r.basePrice)}/disp.`,
+        `• Desconto por faixa: ${formatCurrency(r.tierDiscount)}/disp. (progressivo)`,
+        `• Desconto base anual: ${Number(r.annualDiscountBase).toFixed(1)}% (2º ano) | +2% (3º)`,
+        '',
+        `Validade da proposta: 30 dias.`,
+        `Fico à disposição para ajustar volume, condições e fechar o melhor plano.`
+    ];
 
-CONFIGURAÇÃO DO CONTRATO
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-• Quantidade de dispositivos: ${r.deviceCount}
-• Duração do contrato: ${years} ${years === 1 ? 'ano' : 'anos'}
-• Custo mensal base: ${formatCurrency(r.baseMonthlyCost)}
-
-DETALHAMENTO POR FAIXAS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${r.tiers.tier1.devices > 0 ? `• Faixa 1 (1-50): ${r.tiers.tier1.devices} dispositivos × ${formatCurrency(r.tiers.tier1.price)} = ${formatCurrency(r.tiers.tier1.cost)}/mês` : ''}
-${r.tiers.tier2.devices > 0 ? `• Faixa 2 (51-100): ${r.tiers.tier2.devices} dispositivos × ${formatCurrency(r.tiers.tier2.price)} = ${formatCurrency(r.tiers.tier2.cost)}/mês` : ''}
-${r.tiers.tier3.devices > 0 ? `• Faixa 3 (>100): ${r.tiers.tier3.devices} dispositivos × ${formatCurrency(r.tiers.tier3.price)} = ${formatCurrency(r.tiers.tier3.cost)}/mês` : ''}
-
-RESUMO FINANCEIRO - PLANO DE ${years} ${years === 1 ? 'ANO' : 'ANOS'}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-• Total do contrato: ${formatCurrency(selectedPlan.total)}
-• Mensal equivalente: ${formatCurrency(selectedPlan.monthly)}
-• Taxa de implementação: ${formatCurrency(r.implementationCost)}
-• TOTAL GERAL: ${formatCurrency(selectedPlan.total + r.implementationCost)}
-
-${years > 1 ? `ECONOMIA
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Comparado com contratos anuais consecutivos:
-• Economia total: ${formatCurrency((r.plans.year1.total * years) - selectedPlan.total)}
-• Percentual: ${(((r.plans.year1.total * years) - selectedPlan.total) / (r.plans.year1.total * years) * 100).toFixed(1)}%
-` : ''}
-COMPARAÇÃO DE PLANOS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-• 1 ano: ${formatCurrency(r.plans.year1.total)} (${formatCurrency(r.plans.year1.monthly)}/mês)
-• 2 anos: ${formatCurrency(r.plans.year2.total)} (${formatCurrency(r.plans.year2.monthly)}/mês)
-• 3 anos: ${formatCurrency(r.plans.year3.total)} (${formatCurrency(r.plans.year3.monthly)}/mês)
-
-═══════════════════════════════════════════════════
-Proposta válida por 30 dias.
-Para mais informações, entre em contato com nossa equipe.
-═══════════════════════════════════════════════════
-    `.trim();
+    const text = lines.join('\n').replace(/\r\n/g, '\n');
     
     document.getElementById('proposalText').value = text;
 }
 
 // Copiar proposta
-function copyProposal() {
+async function copyProposal() {
     const textarea = document.getElementById('proposalText');
-    textarea.select();
-    document.execCommand('copy');
-    
+    const text = textarea.value || '';
+
     const originalText = copyBtn.textContent;
-    copyBtn.textContent = '✓ Copiado!';
-    copyBtn.style.background = '#10b981';
-    copyBtn.style.color = 'white';
-    
-    setTimeout(() => {
-        copyBtn.textContent = originalText;
-        copyBtn.style.background = '';
-        copyBtn.style.color = '';
-    }, 2000);
+    const setCopiedUI = () => {
+        copyBtn.textContent = '✓ Copiado!';
+        copyBtn.style.background = '#10b981';
+        copyBtn.style.color = 'white';
+        setTimeout(() => {
+            copyBtn.textContent = originalText;
+            copyBtn.style.background = '';
+            copyBtn.style.color = '';
+        }, 2000);
+    };
+
+    try {
+        if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(text);
+        } else {
+            textarea.focus();
+            textarea.select();
+            document.execCommand('copy');
+        }
+        setCopiedUI();
+    } catch {
+        // fallback extremo
+        window.prompt('Copie o texto abaixo:', text);
+    }
 }
 
 // Formatar moeda
