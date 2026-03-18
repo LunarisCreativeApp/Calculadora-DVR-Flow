@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DVR Flow - Calculadora Comercial</title>
+    <style>
+:root {
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --success-color: #10b981;
+    --success-light: #d1fae5;
+    --danger-color: #ef4444;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --border-color: #e5e7eb;
+    --bg-light: #f9fafb;
+    --bg-white: #ffffff;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    margin: 0 auto;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    color: white;
+    margin-bottom: 40px;
+    padding: 20px;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header img {
+    width: 200px;
+    margin-bottom: 16px;
+}
+
+/* Main Content */
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+/* Card Base */
+.card {
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 32px;
+}
+
+/* Configuration Section */
+#contractForm {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    align-items: start;
+}
+
+.config-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+    color: var(--text-primary);
+}
+
+.form-group {
+    grid-column: span 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    display: flex;
+    flex-direction: column;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+#calculateBtn {
+    grid-column: 1 / -1;
+}
+
+.label-hint {
+    font-weight: 400;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.form-group input[type="number"],
+.form-group select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    transition: all 0.2s;
+    background: var(--bg-white);
+}
+
+.form-group input[type="number"]:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.input-currency,
+.input-percentage {
+    position: relative;
+}
+
+.currency-symbol {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.input-currency input {
+    padding-left: 0px;
+}
+
+.input-percentage input {
+    padding-right: 40px;
+}
+
+.percentage-symbol {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+/* Buttons */
+.btn-primary,
+.btn-secondary {
+    padding: 14px 24px;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+    background: var(--bg-light);
+    color: var(--text-primary);
+    margin-top: 12px;
+}
+
+.btn-secondary:hover {
+    background: var(--border-color);
+}
+
+/* Summary Section */
+.summary-section {
+    grid-column: 1 / -1;
+}
+
+.summary-section h2 {
+    font-size: 1.75rem;
+    margin-bottom: 28px;
+    color: var(--text-primary);
+}
+
+.summary-section h3 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    margin-top: 32px;
+    color: var(--text-primary);
+}
+
+/* KPI Grid */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.kpi-card {
+    background: var(--bg-light);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    border: 2px solid var(--border-color);
+    transition: all 0.2s;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.kpi-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+}
+
+.kpi-success {
+    background: var(--success-light);
+    border-color: var(--success-color);
+}
+
+.kpi-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+
+.kpi-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.kpi-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* Plans Grid */
+.plans-section {
+    margin-top: 32px;
+}
+
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.plan-card {
+    background: var(--bg-white);
+    border: 3px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.plan-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color);
+}
+
+.plan-card.selected {
+    border-color: var(--primary-color);
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+}
+
+.plan-badge {
+    position: absolute;
+    top: -12px;
+    right: 20px;
+    background: var(--primary-color);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.plan-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.plan-total {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 12px;
+}
+
+.plan-monthly {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.plan-savings {
+    font-size: 0.95rem;
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+/* Details Section */
+.details-section {
+    margin-top: 32px;
+}
+
+.detail-card {
+    background: var(--bg-light);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.detail-card h4 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.detail-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+}
+
+.detail-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Tiers Breakdown */
+.tiers-breakdown {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.tier-item {
+    background: var(--bg-white);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 20px;
+    align-items: center;
+}
+
+.tier-name {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.tier-details {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.tier-price {
+    text-align: center;
+}
+
+.tier-price-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.tier-price-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.tier-total {
+    text-align: right;
+}
+
+.tier-total-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.tier-total-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Copy Section */
+.copy-section {
+    margin-top: 32px;
+}
+
+.copy-container {
+    position: relative;
+}
+
+#proposalText {
+    width: 100%;
+    min-height: 300px;
+    padding: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    resize: vertical;
+    background: var(--bg-light);
+}
+
+#proposalText:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-section {
+        grid-column: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .kpi-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .plans-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .tier-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .tier-price,
+    .tier-total {
+        text-align: center;
+    }
+    
+    .card {
+        padding: 20px;
+    }
+
+    #contractForm {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.summary-section {
+    animation: fadeIn 0.4s ease-out;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="subtitle">Calculadora de orçamentos</h1>
+        </header>
+
+        <div class="main-content">
+            <!-- Formulário de Configuração -->
+            <section class="config-section card">
+                <h2>Configuração do Contrato</h2>
+                
+                <form id="contractForm">
+                    <div class="form-group">
+                        <label for="deviceCount">
+                            Quantidade de Dispositivos
+                            <span class="label-hint">Ex: 30, 80, 150</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            id="deviceCount" 
+                            min="1" 
+                            value="50" 
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="basePrice">
+                            Valor Mensal por Dispositivo (Faixa 1 - até 50)
+                            <span class="label-hint">Preço base por dispositivo</span>
+                        </label>
+                        <div class="input-currency">
+                            <input 
+                                type="number" 
+                                id="basePrice" 
+                                min="0" 
+                                step="0.01" 
+                                value="50.00" 
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tierDiscount">
+                            Desconto por Faixa (R$/dispositivo)
+                            <span class="label-hint">Desconto progressivo aplicado por faixa</span>
+                        </label>
+                        <select id="tierDiscount" required>
+                            <option value="2">R$ 2,00</option>
+                            <option value="3">R$ 3,00</option>
+                            <option value="4">R$ 4,00</option>
+                            <option value="5" selected>R$ 5,00</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="annualDiscount">
+                            Desconto Base por Ano de Contrato (%)
+                            <span class="label-hint">2 anos: base% no 2º ano | 3 anos: (base+2)% no 2º, (base+4)% no 3º</span>
+                        </label>
+                        <div class="input-percentage">
+                            <input 
+                                type="number" 
+                                id="annualDiscount" 
+                                min="0" 
+                                max="100" 
+                                step="0.5" 
+                                value="5" 
+                                required
+                            >
+                            <span class="percentage-symbol">%</span>
+                        </div>
+                    </div>
+
+                    <button type="button" id="calculateBtn" class="btn-primary">
+                        Calcular Orçamento
+                    </button>
+                </form>
+            </section>
+
+            <!-- Resumo Financeiro -->
+            <section class="summary-section" id="summarySection" style="display: none;">
+                <div class="card">
+                    <h2>Resumo Financeiro</h2>
+                    
+                    <!-- KPIs Principais -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card kpi-primary">
+                            <div class="kpi-label">Total do Contrato</div>
+                            <div class="kpi-value" id="kpiTotal">R$ 0,00</div>
+                            <div class="kpi-subtitle" id="kpiSubtitle">Plano de 3 anos</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Mensal Equivalente</div>
+                            <div class="kpi-value" id="kpiMonthly">R$ 0,00</div>
+                            <div class="kpi-subtitle">Valor médio por mês</div>
+                        </div>
+                        <div class="kpi-card kpi-success">
+                            <div class="kpi-label">Economia vs 1 Ano</div>
+                            <div class="kpi-value" id="kpiSavings">R$ 0,00</div>
+                            <div class="kpi-subtitle" id="kpiSavingsPercent">0%</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Total + Implementação</div>
+                            <div class="kpi-value" id="kpiWithImpl">R$ 0,00</div>
+                            <div class="kpi-subtitle" id="kpiImplValue">Implementação: R$ 0,00</div>
+                        </div>
+                    </div>
+
+                    <!-- Cards de Planos -->
+                    <div class="plans-section">
+                        <h3>Comparação de Planos</h3>
+                        <div class="plans-grid" id="plansGrid">
+                            <!-- Cards serão gerados dinamicamente -->
+                        </div>
+                    </div>
+
+                    <!-- Detalhamento por Faixas -->
+                    <div class="details-section">
+                        <h3>Detalhamento de Custos</h3>
+                        
+                        <div class="detail-card">
+                            <h4>Custo Mensal Base</h4>
+                            <div class="detail-value" id="baseMonthlyCost">R$ 0,00</div>
+                            <p class="detail-description">Custo mensal total com base nas faixas de preço</p>
+                        </div>
+
+                        <div class="tiers-breakdown" id="tiersBreakdown">
+                            <!-- Breakdown de faixas será gerado dinamicamente -->
+                        </div>
+
+                        <div class="detail-card">
+                            <h4>Taxa de Implementação</h4>
+                            <div class="detail-value" id="implementationCost">R$ 0,00</div>
+                            <p class="detail-description" id="implementationFormula">0 dispositivos × R$ 10,00</p>
+                        </div>
+                    </div>
+
+                    <!-- Texto Copiável -->
+                    <div class="copy-section">
+                        <h3>Proposta para o Cliente</h3>
+                        <div class="copy-container">
+                            <textarea id="proposalText" readonly></textarea>
+                            <button type="button" id="copyBtn" class="btn-secondary">
+                                📋 Copiar Proposta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+// Elementos do DOM
+const form = {
+    deviceCount: document.getElementById('deviceCount'),
+    basePrice: document.getElementById('basePrice'),
+    tierDiscount: document.getElementById('tierDiscount'),
+    annualDiscount: document.getElementById('annualDiscount')
+};
+
+const calculateBtn = document.getElementById('calculateBtn');
+const summarySection = document.getElementById('summarySection');
+const copyBtn = document.getElementById('copyBtn');
+
+// Estado da aplicação
+let calculationResults = null;
+
+// Função principal de cálculo
+function calculateBudget() {
+    const deviceCount = parseInt(form.deviceCount.value);
+    const basePrice = parseFloat(form.basePrice.value);
+    const tierDiscount = parseFloat(form.tierDiscount.value);
+    const annualDiscountBase = parseFloat(form.annualDiscount.value);
+
+    // Validações básicas
+    if (deviceCount <= 0 || basePrice <= 0) {
+        alert('Por favor, preencha todos os campos corretamente.');
+        return;
+    }
+
+    // Calcular preços por faixa
+    const prices = {
+        tier1: basePrice, // até 50
+        tier2: basePrice - tierDiscount, // 51-100
+        tier3: basePrice - (2 * tierDiscount) // >100
+    };
+
+    // Distribuir dispositivos por faixa
+    let tier1Devices = 0;
+    let tier2Devices = 0;
+    let tier3Devices = 0;
+
+    if (deviceCount <= 50) {
+        tier1Devices = deviceCount;
+    } else if (deviceCount <= 100) {
+        tier1Devices = 50;
+        tier2Devices = deviceCount - 50;
+    } else {
+        tier1Devices = 50;
+        tier2Devices = 50;
+        tier3Devices = deviceCount - 100;
+    }
+
+    // Calcular custo mensal base por faixa
+    const tier1Cost = tier1Devices * prices.tier1;
+    const tier2Cost = tier2Devices * prices.tier2;
+    const tier3Cost = tier3Devices * prices.tier3;
+    const baseMonthlyCost = tier1Cost + tier2Cost + tier3Cost;
+
+    // Calcular totais por anos com descontos
+    const year1Total = baseMonthlyCost * 12;
+    
+    // Ano 2: primeiro ano normal + segundo ano com desconto
+    const year2Discount = annualDiscountBase;
+    const year2Total = (baseMonthlyCost * 12) + (baseMonthlyCost * 12 * (1 - year2Discount / 100));
+    
+    // Ano 3: primeiro ano normal + segundo com desconto + terceiro com desconto maior
+    const year3Discount2 = annualDiscountBase + 2;
+    const year3Discount3 = annualDiscountBase + 4;
+    const year3Total = (baseMonthlyCost * 12) + 
+                       (baseMonthlyCost * 12 * (1 - year3Discount2 / 100)) + 
+                       (baseMonthlyCost * 12 * (1 - year3Discount3 / 100));
+
+    // Calcular mensais equivalentes
+    const year1Monthly = year1Total / 12;
+    const year2Monthly = year2Total / 24;
+    const year3Monthly = year3Total / 36;
+
+    // Calcular implementação
+    const implementationCost = deviceCount * 10;
+
+    // Armazenar resultados
+    calculationResults = {
+        deviceCount,
+        basePrice,
+        tierDiscount,
+        annualDiscountBase,
+        prices,
+        tiers: {
+            tier1: { devices: tier1Devices, price: prices.tier1, cost: tier1Cost },
+            tier2: { devices: tier2Devices, price: prices.tier2, cost: tier2Cost },
+            tier3: { devices: tier3Devices, price: prices.tier3, cost: tier3Cost }
+        },
+        baseMonthlyCost,
+        plans: {
+            year1: { total: year1Total, monthly: year1Monthly, months: 12 },
+            year2: { total: year2Total, monthly: year2Monthly, months: 24 },
+            year3: { total: year3Total, monthly: year3Monthly, months: 36 }
+        },
+        implementationCost,
+        selectedPlan: calculationResults?.selectedPlan ?? 'year3'
+    };
+
+    calculationResults.contractYears = parseInt(calculationResults.selectedPlan.replace('year', ''), 10);
+
+    renderResults();
+}
+
+// Renderizar resultados
+function renderResults() {
+    const r = calculationResults;
+    const selectedPlan = r.plans[r.selectedPlan];
+    const year1Plan = r.plans.year1;
+
+    // KPIs principais
+    document.getElementById('kpiTotal').textContent = formatCurrency(selectedPlan.total);
+    document.getElementById('kpiSubtitle').textContent = `Plano de ${r.contractYears} ${r.contractYears === 1 ? 'ano' : 'anos'}`;
+    document.getElementById('kpiMonthly').textContent = formatCurrency(selectedPlan.monthly);
+    
+    // Economia vs 1 ano
+    const fullPrice = year1Plan.total * r.contractYears;
+    const savings = fullPrice - selectedPlan.total;
+    const savingsPercent = fullPrice > 0 ? (savings / fullPrice) * 100 : 0;
+    document.getElementById('kpiSavings').textContent = formatCurrency(savings);
+    document.getElementById('kpiSavingsPercent').textContent = `${savingsPercent.toFixed(1)}% de economia`;
+    
+    // Total com implementação
+    const totalWithImpl = selectedPlan.total + r.implementationCost;
+    document.getElementById('kpiWithImpl').textContent = formatCurrency(totalWithImpl);
+    document.getElementById('kpiImplValue').textContent = `Implementação: ${formatCurrency(r.implementationCost)}`;
+
+    // Cards de planos
+    renderPlanCards();
+
+    // Detalhamento de custos
+    document.getElementById('baseMonthlyCost').textContent = formatCurrency(r.baseMonthlyCost);
+    renderTiersBreakdown();
+
+    // Implementação
+    document.getElementById('implementationCost').textContent = formatCurrency(r.implementationCost);
+    document.getElementById('implementationFormula').textContent = `${r.deviceCount} dispositivos × R$ 10,00`;
+
+    // Texto da proposta
+    generateProposalText();
+
+    // Mostrar seção de resumo
+    summarySection.style.display = 'block';
+}
+
+// Renderizar cards de planos
+function renderPlanCards() {
+    const r = calculationResults;
+    const plansGrid = document.getElementById('plansGrid');
+    const year1Plan = r.plans.year1;
+    
+    plansGrid.innerHTML = '';
+
+    ['year1', 'year2', 'year3'].forEach((planKey, index) => {
+        const plan = r.plans[planKey];
+        const years = index + 1;
+        const isSelected = r.selectedPlan === planKey;
+        
+        // Calcular economia
+        const fullPrice = year1Plan.total * years;
+        const savings = fullPrice - plan.total;
+        const savingsPercent = years === 1 ? 0 : (savings / fullPrice) * 100;
+
+        const card = document.createElement('div');
+        card.className = `plan-card ${isSelected ? 'selected' : ''}`;
+        card.onclick = () => selectPlan(planKey);
+        
+        card.innerHTML = `
+            ${isSelected ? '<div class="plan-badge">Selecionado</div>' : ''}
+            <div class="plan-title">${years} ${years === 1 ? 'Ano' : 'Anos'}</div>
+            <div class="plan-total">${formatCurrency(plan.total)}</div>
+            <div class="plan-monthly">Mensal: ${formatCurrency(plan.monthly)}</div>
+            ${years > 1 ? `<div class="plan-savings">💰 Economize ${formatCurrency(savings)} (${savingsPercent.toFixed(1)}%)</div>` : '<div class="plan-savings" style="opacity: 0.5;">Plano base</div>'}
+        `;
+        
+        plansGrid.appendChild(card);
+    });
+}
+
+// Selecionar plano
+function selectPlan(planKey) {
+    const years = parseInt(planKey.replace('year', ''));
+    calculationResults.selectedPlan = planKey;
+    calculationResults.contractYears = years;
+    renderResults();
+}
+
+// Renderizar breakdown de faixas
+function renderTiersBreakdown() {
+    const r = calculationResults;
+    const container = document.getElementById('tiersBreakdown');
+    
+    container.innerHTML = '';
+
+    const tiers = [
+        { key: 'tier1', name: 'Faixa 1', range: '1-50 dispositivos' },
+        { key: 'tier2', name: 'Faixa 2', range: '51-100 dispositivos' },
+        { key: 'tier3', name: 'Faixa 3', range: 'Acima de 100 dispositivos' }
+    ];
+
+    tiers.forEach(tier => {
+        const data = r.tiers[tier.key];
+        
+        if (data.devices > 0) {
+            const item = document.createElement('div');
+            item.className = 'tier-item';
+            
+            item.innerHTML = `
+                <div>
+                    <div class="tier-name">${tier.name}</div>
+                    <div class="tier-details">${tier.range} • ${data.devices} dispositivos</div>
+                </div>
+                <div class="tier-price">
+                    <div class="tier-price-label">Preço unitário</div>
+                    <div class="tier-price-value">${formatCurrency(data.price)}</div>
+                </div>
+                <div class="tier-total">
+                    <div class="tier-total-label">Total mensal</div>
+                    <div class="tier-total-value">${formatCurrency(data.cost)}</div>
+                </div>
+            `;
+            
+            container.appendChild(item);
+        }
+    });
+}
+
+// Gerar texto da proposta
+function generateProposalText() {
+    const r = calculationResults;
+    const selectedPlan = r.plans[r.selectedPlan];
+    const years = r.contractYears;
+    const year1Plan = r.plans.year1;
+
+    const fullPrice = year1Plan.total * years;
+    const savings = fullPrice - selectedPlan.total;
+    const savingsPercent = fullPrice > 0 ? (savings / fullPrice) * 100 : 0;
+
+    const totalWithImpl = selectedPlan.total + r.implementationCost;
+
+    const fmtDevices = (n) => new Intl.NumberFormat('pt-BR').format(n);
+
+    const tiersLines = [
+        r.tiers.tier1.devices > 0
+            ? `• Faixa 1 (1–50): ${fmtDevices(r.tiers.tier1.devices)} × ${formatCurrency(r.tiers.tier1.price)} = ${formatCurrency(r.tiers.tier1.cost)}/mês`
+            : null,
+        r.tiers.tier2.devices > 0
+            ? `• Faixa 2 (51–100): ${fmtDevices(r.tiers.tier2.devices)} × ${formatCurrency(r.tiers.tier2.price)} = ${formatCurrency(r.tiers.tier2.cost)}/mês`
+            : null,
+        r.tiers.tier3.devices > 0
+            ? `• Faixa 3 (>100): ${fmtDevices(r.tiers.tier3.devices)} × ${formatCurrency(r.tiers.tier3.price)} = ${formatCurrency(r.tiers.tier3.cost)}/mês`
+            : null
+    ].filter(Boolean);
+
+    const plansLines = [
+        `• 1 ano: ${formatCurrency(r.plans.year1.total)} (≈ ${formatCurrency(r.plans.year1.monthly)}/mês)`,
+        `• 2 anos: ${formatCurrency(r.plans.year2.total)} (≈ ${formatCurrency(r.plans.year2.monthly)}/mês)`,
+        `• 3 anos: ${formatCurrency(r.plans.year3.total)} (≈ ${formatCurrency(r.plans.year3.monthly)}/mês)`
+    ];
+    
+    // Importante: NÃO usar `.filter(Boolean)` aqui, porque ele remove strings vazias
+    // que são justamente as linhas em branco.
+    const lines = [
+        `PROPOSTA COMERCIAL — DVR FLOW`,
+        `Data: ${new Intl.DateTimeFormat('pt-BR').format(new Date())}`,
+        '',
+        `Olá! Segue a simulação para ${fmtDevices(r.deviceCount)} dispositivo(s).`,
+        '',
+        `✅ PLANO SELECIONADO: ${years} ${years === 1 ? 'ano' : 'anos'}`,
+        `• Mensal equivalente: ${formatCurrency(selectedPlan.monthly)}`,
+        `• Total do contrato: ${formatCurrency(selectedPlan.total)}`,
+        `• Implementação (taxa única): ${formatCurrency(r.implementationCost)}`,
+        `• Total geral (contrato + implementação): ${formatCurrency(totalWithImpl)}`,
+        years > 1 ? `• Economia vs ${years} contrato(s) de 1 ano: ${formatCurrency(savings)} (${savingsPercent.toFixed(1)}%)` : '',
+        '',
+        `Custo mensal base (somatório das faixas): ${formatCurrency(r.baseMonthlyCost)}`,
+        '',
+        `Detalhamento por faixas (mensal):`,
+        ...tiersLines,
+        '',
+        `Comparação de planos (total e mensal equivalente):`,
+        ...plansLines,
+        '',
+        `Condições usadas na simulação:`,
+        `• Preço base (Faixa 1): ${formatCurrency(r.basePrice)}/disp.`,
+        `• Desconto por faixa: ${formatCurrency(r.tierDiscount)}/disp. (progressivo)`,
+        `• Desconto base anual: ${Number(r.annualDiscountBase).toFixed(1)}% (2º ano) | +2% (3º)`,
+        '',
+        `Validade da proposta: 30 dias.`,
+        `Fico à disposição para ajustar volume, condições e fechar o melhor plano.`
+    ];
+
+    const text = lines.join('\n').replace(/\r\n/g, '\n');
+    
+    document.getElementById('proposalText').value = text;
+}
+
+// Copiar proposta
+async function copyProposal() {
+    const textarea = document.getElementById('proposalText');
+    const text = textarea.value || '';
+
+    const originalText = copyBtn.textContent;
+    const setCopiedUI = () => {
+        copyBtn.textContent = '✓ Copiado!';
+        copyBtn.style.background = '#10b981';
+        copyBtn.style.color = 'white';
+        setTimeout(() => {
+            copyBtn.textContent = originalText;
+            copyBtn.style.background = '';
+            copyBtn.style.color = '';
+        }, 2000);
+    };
+
+    try {
+        if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(text);
+        } else {
+            textarea.focus();
+            textarea.select();
+            document.execCommand('copy');
+        }
+        setCopiedUI();
+    } catch {
+        // fallback extremo
+        window.prompt('Copie o texto abaixo:', text);
+    }
+}
+
+// Formatar moeda
+function formatCurrency(value) {
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    }).format(value);
+}
+
+// Event listeners
+calculateBtn.addEventListener('click', calculateBudget);
+copyBtn.addEventListener('click', copyProposal);
+
+// Calcular ao pressionar Enter nos inputs
+Object.values(form)
+    .filter(Boolean)
+    .forEach((input) => {
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                calculateBudget();
+            }
+        });
+    });
+
+// Calcular automaticamente ao carregar (valores padrão)
+window.addEventListener('load', () => {
+    calculateBudget();
+});
+
+    </script>
+</body>
+</html>
