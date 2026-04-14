@@ -18,13 +18,16 @@
             <section class="config-section card">
                 <h2>Configuração do Contrato</h2>
 
+                <div class="config-mode-tabs" id="configModeTabs" role="tablist" aria-label="Modo de configuração do contrato">
+                    <button type="button" class="config-mode-tab is-active" data-mode="manual" role="tab" aria-selected="true">
+                        Configuração manual
+                    </button>
+                    <button type="button" class="config-mode-tab" data-mode="final-price" role="tab" aria-selected="false">
+                        Calcular por preço final
+                    </button>
+                </div>
+
                 <div class="config-mode-switch" id="configModeSwitch">
-                    <label class="mode-toggle" for="pricingModeToggle" aria-label="Alternar modo de configuração">
-                        <input type="checkbox" id="pricingModeToggle" class="mode-toggle-input">
-                        <span class="mode-toggle-track">
-                            <span class="mode-toggle-thumb"></span>
-                        </span>
-                    </label>
                     <div class="config-mode-info">
                         <div class="config-mode-title" id="configModeTitle">Modo: Configuração manual</div>
                         <div class="config-mode-description" id="configModeDescription">

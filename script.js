@@ -7,7 +7,7 @@ const form = {
     targetFinalPrice: document.getElementById('targetFinalPrice')
 };
 
-const pricingModeToggle = document.getElementById('pricingModeToggle');
+const configModeTabs = Array.from(document.querySelectorAll('.config-mode-tab'));
 const configModeTitle = document.getElementById('configModeTitle');
 const configModeDescription = document.getElementById('configModeDescription');
 const targetFinalPriceGroup = document.getElementById('targetFinalPriceGroup');
@@ -26,6 +26,7 @@ const FINAL_PRICE_MODE_DEFAULTS = {
 
 // Estado da aplicação
 let calculationResults = null;
+let pricingMode = 'manual';
 
 function getTierDeviceDistribution(deviceCount) {
     if (deviceCount <= 50) {
@@ -69,12 +70,18 @@ function setPricingModeUI(isFinalPriceMode) {
         configModeTitle.textContent = 'Modo: Configuração manual';
         configModeDescription.textContent = 'Você define preço base, desconto por faixa e desconto anual.';
     }
+
+    configModeTabs.forEach((tab) => {
+        const isActive = isFinalPriceMode ? tab.dataset.mode === 'final-price' : tab.dataset.mode === 'manual';
+        tab.classList.toggle('is-active', isActive);
+        tab.setAttribute('aria-selected', String(isActive));
+    });
 }
 
 // Função principal de cálculo
 function calculateBudget() {
     const deviceCount = parseInt(form.deviceCount.value);
-    const isFinalPriceMode = Boolean(pricingModeToggle?.checked);
+    const isFinalPriceMode = pricingMode === 'final-price';
 
     let targetFinalPrice = null;
     let basePrice = parseFloat(form.basePrice.value);
@@ -536,9 +543,12 @@ function formatCurrency(value) {
 // Event listeners
 calculateBtn.addEventListener('click', calculateBudget);
 copyBtn.addEventListener('click', copyProposal);
-pricingModeToggle?.addEventListener('change', () => {
-    setPricingModeUI(pricingModeToggle.checked);
-    calculateBudget();
+configModeTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+        pricingMode = tab.dataset.mode === 'final-price' ? 'final-price' : 'manual';
+        setPricingModeUI(pricingMode === 'final-price');
+        calculateBudget();
+    });
 });
 
 // Calcular ao pressionar Enter nos inputs
@@ -554,6 +564,6 @@ Object.values(form)
 
 // Calcular automaticamente ao carregar (valores padrão)
 window.addEventListener('load', () => {
-    setPricingModeUI(Boolean(pricingModeToggle?.checked));
+    setPricingModeUI(pricingMode === 'final-price');
     calculateBudget();
 });

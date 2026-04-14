@@ -172,6 +172,37 @@ body {
     overflow: hidden;
 }
 
+.config-mode-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.config-mode-tab {
+    border: 1px solid var(--bg-400);
+    border-radius: var(--radius-sm);
+    background: var(--bg-300);
+    color: var(--text-secondary);
+    padding: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    text-align: center;
+}
+
+.config-mode-tab:hover {
+    border-color: var(--brand-300);
+    color: var(--text-primary);
+}
+
+.config-mode-tab.is-active {
+    border-color: var(--brand-300);
+    background: var(--bg-200);
+    color: var(--text-primary);
+}
+
 .config-mode-switch {
     display: flex;
     align-items: center;
@@ -181,53 +212,6 @@ body {
     border: 1px solid var(--bg-400);
     border-radius: var(--radius-md);
     background: var(--bg-300);
-}
-
-.mode-toggle {
-    position: relative;
-    display: inline-flex;
-    width: 44px;
-    min-width: 44px;
-    height: 24px;
-    cursor: pointer;
-}
-
-.mode-toggle-input {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.mode-toggle-track {
-    width: 100%;
-    height: 100%;
-    border-radius: 999px;
-    background: var(--gray-300);
-    border: 1px solid var(--gray-400);
-    position: relative;
-    transition: 0.2s;
-}
-
-.mode-toggle-thumb {
-    position: absolute;
-    top: 50%;
-    left: 2px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--text-primary);
-    transform: translateY(-50%);
-    transition: 0.2s;
-}
-
-.mode-toggle-input:checked + .mode-toggle-track {
-    background: var(--brand-300);
-    border-color: var(--brand-400);
-}
-
-.mode-toggle-input:checked + .mode-toggle-track .mode-toggle-thumb {
-    left: 22px;
 }
 
 .config-mode-info {
@@ -851,6 +835,10 @@ input::selection {
 }
 
 @media (max-width: 768px) {
+    .config-mode-tabs {
+        grid-template-columns: 1fr;
+    }
+
     .header h1 {
         font-size: 2rem;
     }
