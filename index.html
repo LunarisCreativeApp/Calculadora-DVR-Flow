@@ -17,6 +17,21 @@
             <!-- Formulário de Configuração -->
             <section class="config-section card">
                 <h2>Configuração do Contrato</h2>
+
+                <div class="config-mode-switch" id="configModeSwitch">
+                    <label class="mode-toggle" for="pricingModeToggle" aria-label="Alternar modo de configuração">
+                        <input type="checkbox" id="pricingModeToggle" class="mode-toggle-input">
+                        <span class="mode-toggle-track">
+                            <span class="mode-toggle-thumb"></span>
+                        </span>
+                    </label>
+                    <div class="config-mode-info">
+                        <div class="config-mode-title" id="configModeTitle">Modo: Configuração manual</div>
+                        <div class="config-mode-description" id="configModeDescription">
+                            Você define preço base, desconto por faixa e desconto anual.
+                        </div>
+                    </div>
+                </div>
                 
                 <form id="contractForm">
                     <div class="form-group">
@@ -33,7 +48,21 @@
                         >
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group is-hidden" id="targetFinalPriceGroup">
+                        <label for="targetFinalPrice">
+                            Preço final desejado (mensal)
+                            <span class="label-hint">Ex: 2000. Neste modo, desconto por faixa = R$ 2 e anual = 2%.</span>
+                        </label>
+                        <input
+                            type="number"
+                            id="targetFinalPrice"
+                            min="0"
+                            step="0.01"
+                            value="2000"
+                        >
+                    </div>
+
+                    <div class="form-group" id="basePriceGroup">
                         <label for="basePrice">
                             Valor Mensal por Dispositivo (Faixa 1 - até 50)
                             <span class="label-hint">Preço base por dispositivo</span>
@@ -48,23 +77,21 @@
                         >
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" id="tierDiscountGroup">
                         <label for="tierDiscount">
                             Desconto por Faixa (R$/dispositivo)
                             <span class="label-hint">Desconto progressivo aplicado por faixa</span>
                         </label>
                         <select id="tierDiscount" required>
-                            <option value="2">R$ 2,00</option>
+                            <option value="2" selected>R$ 2,00</option>
                             <option value="3">R$ 3,00</option>
-                            <option value="4">R$ 4,00</option>
-                            <option value="5" selected>R$ 5,00</option>
                         </select>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" id="annualDiscountGroup">
                         <label for="annualDiscount">
                             Desconto Base por Ano de Contrato (%)
-                            <span class="label-hint">2 anos: base% no 2º ano | 3 anos: (base+2)% no 2º, (base+4)% no 3º</span>
+                            <span class="label-hint">2 anos: base% no 2º ano | 3 anos: base% no 2º, (base×2)% no 3º</span>
                         </label>
                         <input 
                             type="number" 

@@ -3,25 +3,103 @@ const form = {
     deviceCount: document.getElementById('deviceCount'),
     basePrice: document.getElementById('basePrice'),
     tierDiscount: document.getElementById('tierDiscount'),
-    annualDiscount: document.getElementById('annualDiscount')
+    annualDiscount: document.getElementById('annualDiscount'),
+    targetFinalPrice: document.getElementById('targetFinalPrice')
 };
+
+const pricingModeToggle = document.getElementById('pricingModeToggle');
+const configModeTitle = document.getElementById('configModeTitle');
+const configModeDescription = document.getElementById('configModeDescription');
+const targetFinalPriceGroup = document.getElementById('targetFinalPriceGroup');
+const basePriceGroup = document.getElementById('basePriceGroup');
+const tierDiscountGroup = document.getElementById('tierDiscountGroup');
+const annualDiscountGroup = document.getElementById('annualDiscountGroup');
 
 const calculateBtn = document.getElementById('calculateBtn');
 const summarySection = document.getElementById('summarySection');
 const copyBtn = document.getElementById('copyBtn');
 
+const FINAL_PRICE_MODE_DEFAULTS = {
+    tierDiscount: 2,
+    annualDiscount: 2
+};
+
 // Estado da aplicação
 let calculationResults = null;
+
+function getTierDeviceDistribution(deviceCount) {
+    if (deviceCount <= 50) {
+        return { tier1: deviceCount, tier2: 0, tier3: 0 };
+    }
+
+    if (deviceCount <= 100) {
+        return { tier1: 50, tier2: deviceCount - 50, tier3: 0 };
+    }
+
+    return { tier1: 50, tier2: 50, tier3: deviceCount - 100 };
+}
+
+function deriveBasePriceFromTargetMonthly(targetMonthlyValue, deviceCount, tierDiscount) {
+    const tiers = getTierDeviceDistribution(deviceCount);
+    const weightedDiscount = (tiers.tier2 * tierDiscount) + (tiers.tier3 * (2 * tierDiscount));
+
+    return (targetMonthlyValue + weightedDiscount) / deviceCount;
+}
+
+function setPricingModeUI(isFinalPriceMode) {
+    targetFinalPriceGroup.classList.toggle('is-hidden', !isFinalPriceMode);
+    basePriceGroup.classList.toggle('is-hidden', isFinalPriceMode);
+    tierDiscountGroup.classList.toggle('is-hidden', isFinalPriceMode);
+    annualDiscountGroup.classList.toggle('is-hidden', isFinalPriceMode);
+
+    form.targetFinalPrice.required = isFinalPriceMode;
+    form.basePrice.required = !isFinalPriceMode;
+    form.tierDiscount.required = !isFinalPriceMode;
+    form.annualDiscount.required = !isFinalPriceMode;
+
+    form.basePrice.disabled = isFinalPriceMode;
+    form.tierDiscount.disabled = isFinalPriceMode;
+    form.annualDiscount.disabled = isFinalPriceMode;
+    form.targetFinalPrice.disabled = !isFinalPriceMode;
+
+    if (isFinalPriceMode) {
+        configModeTitle.textContent = 'Modo: Calcular por preço final';
+        configModeDescription.textContent = 'Informe o valor mensal desejado. O cálculo usa R$ 2 por faixa e 2% anual como padrão.';
+    } else {
+        configModeTitle.textContent = 'Modo: Configuração manual';
+        configModeDescription.textContent = 'Você define preço base, desconto por faixa e desconto anual.';
+    }
+}
 
 // Função principal de cálculo
 function calculateBudget() {
     const deviceCount = parseInt(form.deviceCount.value);
-    const basePrice = parseFloat(form.basePrice.value);
-    const tierDiscount = parseFloat(form.tierDiscount.value);
-    const annualDiscountBase = parseFloat(form.annualDiscount.value);
+    const isFinalPriceMode = Boolean(pricingModeToggle?.checked);
+
+    let targetFinalPrice = null;
+    let basePrice = parseFloat(form.basePrice.value);
+    let tierDiscount = parseFloat(form.tierDiscount.value);
+    let annualDiscountBase = parseFloat(form.annualDiscount.value);
+
+    if (isFinalPriceMode) {
+        targetFinalPrice = parseFloat(form.targetFinalPrice.value);
+        tierDiscount = FINAL_PRICE_MODE_DEFAULTS.tierDiscount;
+        annualDiscountBase = FINAL_PRICE_MODE_DEFAULTS.annualDiscount;
+
+        if (!Number.isFinite(targetFinalPrice) || targetFinalPrice <= 0) {
+            alert('Por favor, informe um preço final mensal válido.');
+            return;
+        }
+
+        basePrice = deriveBasePriceFromTargetMonthly(targetFinalPrice, deviceCount, tierDiscount);
+
+        form.basePrice.value = basePrice.toFixed(2);
+        form.tierDiscount.value = String(tierDiscount);
+        form.annualDiscount.value = String(annualDiscountBase);
+    }
 
     // Validações básicas
-    if (deviceCount <= 0 || basePrice <= 0) {
+    if (deviceCount <= 0 || basePrice <= 0 || !Number.isFinite(basePrice)) {
         alert('Por favor, preencha todos os campos corretamente.');
         return;
     }
@@ -34,20 +112,10 @@ function calculateBudget() {
     };
 
     // Distribuir dispositivos por faixa
-    let tier1Devices = 0;
-    let tier2Devices = 0;
-    let tier3Devices = 0;
-
-    if (deviceCount <= 50) {
-        tier1Devices = deviceCount;
-    } else if (deviceCount <= 100) {
-        tier1Devices = 50;
-        tier2Devices = deviceCount - 50;
-    } else {
-        tier1Devices = 50;
-        tier2Devices = 50;
-        tier3Devices = deviceCount - 100;
-    }
+    const tierDistribution = getTierDeviceDistribution(deviceCount);
+    const tier1Devices = tierDistribution.tier1;
+    const tier2Devices = tierDistribution.tier2;
+    const tier3Devices = tierDistribution.tier3;
 
     // Calcular custo mensal base por faixa
     const tier1Cost = tier1Devices * prices.tier1;
@@ -62,9 +130,9 @@ function calculateBudget() {
     const year2Discount = annualDiscountBase;
     const year2Total = (baseMonthlyCost * 12) + (baseMonthlyCost * 12 * (1 - year2Discount / 100));
     
-    // Ano 3: primeiro ano normal + segundo com desconto + terceiro com desconto maior
-    const year3Discount2 = annualDiscountBase + 2;
-    const year3Discount3 = annualDiscountBase + 4;
+    // Ano 3: primeiro ano normal + segundo com desconto base + terceiro com desconto progressivo (base * 2)
+    const year3Discount2 = annualDiscountBase;
+    const year3Discount3 = annualDiscountBase * 2;
     const year3Total = (baseMonthlyCost * 12) + 
                        (baseMonthlyCost * 12 * (1 - year3Discount2 / 100)) + 
                        (baseMonthlyCost * 12 * (1 - year3Discount3 / 100));
@@ -83,6 +151,8 @@ function calculateBudget() {
         basePrice,
         tierDiscount,
         annualDiscountBase,
+    targetFinalPrice,
+    pricingMode: isFinalPriceMode ? 'final-price' : 'manual',
         prices,
         tiers: {
             tier1: { devices: tier1Devices, price: prices.tier1, cost: tier1Cost },
@@ -243,7 +313,7 @@ function renderAnnualBreakdown() {
             return r.annualDiscountBase;
         }
 
-        return r.annualDiscountBase + 4;
+    return r.annualDiscountBase * 2;
     };
 
     const tierDefinitions = [
@@ -278,10 +348,10 @@ function renderAnnualBreakdown() {
             label: '3 anos',
             yearNumber: 3,
             annualLabel: 'Ano 3',
-            discountLabel: `${Number(r.annualDiscountBase + 4).toFixed(1)}% de desconto`,
+            discountLabel: `${Number(r.annualDiscountBase * 2).toFixed(1)}% de desconto`,
             total: r.plans.year3.total,
-            monthly: r.baseMonthlyCost * (1 - (r.annualDiscountBase + 4) / 100),
-            yearly: r.baseMonthlyCost * 12 * (1 - (r.annualDiscountBase + 4) / 100)
+            monthly: r.baseMonthlyCost * (1 - (r.annualDiscountBase * 2) / 100),
+            yearly: r.baseMonthlyCost * 12 * (1 - (r.annualDiscountBase * 2) / 100)
         }
     ];
 
@@ -391,6 +461,8 @@ function generateProposalText() {
         `Data: ${new Intl.DateTimeFormat('pt-BR').format(new Date())}`,
         '',
         `Olá! Segue a simulação para ${fmtDevices(r.deviceCount)} dispositivo(s).`,
+        `Modo de cálculo: ${r.pricingMode === 'final-price' ? 'Preço final mensal' : 'Configuração manual'}`,
+        r.pricingMode === 'final-price' ? `Preço final desejado (mensal): ${formatCurrency(r.targetFinalPrice || 0)}` : '',
         '',
         `✅ PLANO SELECIONADO: ${years} ${years === 1 ? 'ano' : 'anos'}`,
         `• Mensal equivalente: ${formatCurrency(selectedPlan.monthly)}`,
@@ -410,7 +482,7 @@ function generateProposalText() {
         `Condições usadas na simulação:`,
         `• Preço base (Faixa 1): ${formatCurrency(r.basePrice)}/disp.`,
         `• Desconto por faixa: ${formatCurrency(r.tierDiscount)}/disp. (progressivo)`,
-        `• Desconto base anual: ${Number(r.annualDiscountBase).toFixed(1)}% (2º ano) | +2% (3º)`,
+    `• Desconto base anual: ${Number(r.annualDiscountBase).toFixed(1)}% (2º ano) | ${Number(r.annualDiscountBase * 2).toFixed(1)}% (3º ano)`,
         '',
         `Validade da proposta: 30 dias.`,
         `Fico à disposição para ajustar volume, condições e fechar o melhor plano.`
@@ -464,6 +536,10 @@ function formatCurrency(value) {
 // Event listeners
 calculateBtn.addEventListener('click', calculateBudget);
 copyBtn.addEventListener('click', copyProposal);
+pricingModeToggle?.addEventListener('change', () => {
+    setPricingModeUI(pricingModeToggle.checked);
+    calculateBudget();
+});
 
 // Calcular ao pressionar Enter nos inputs
 Object.values(form)
@@ -478,5 +554,6 @@ Object.values(form)
 
 // Calcular automaticamente ao carregar (valores padrão)
 window.addEventListener('load', () => {
+    setPricingModeUI(Boolean(pricingModeToggle?.checked));
     calculateBudget();
 });

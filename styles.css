@@ -172,6 +172,80 @@ body {
     overflow: hidden;
 }
 
+.config-mode-switch {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid var(--bg-400);
+    border-radius: var(--radius-md);
+    background: var(--bg-300);
+}
+
+.mode-toggle {
+    position: relative;
+    display: inline-flex;
+    width: 44px;
+    min-width: 44px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.mode-toggle-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.mode-toggle-track {
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--gray-300);
+    border: 1px solid var(--gray-400);
+    position: relative;
+    transition: 0.2s;
+}
+
+.mode-toggle-thumb {
+    position: absolute;
+    top: 50%;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--text-primary);
+    transform: translateY(-50%);
+    transition: 0.2s;
+}
+
+.mode-toggle-input:checked + .mode-toggle-track {
+    background: var(--brand-300);
+    border-color: var(--brand-400);
+}
+
+.mode-toggle-input:checked + .mode-toggle-track .mode-toggle-thumb {
+    left: 22px;
+}
+
+.config-mode-info {
+    display: grid;
+    gap: 5px;
+}
+
+.config-mode-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.config-mode-description {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
 .config-section::before {
     content: '';
     position: absolute;
@@ -184,6 +258,10 @@ body {
     grid-column: span 1;
     display: flex;
     flex-direction: column;
+}
+
+.is-hidden {
+    display: none !important;
 }
 
 .form-group label {
